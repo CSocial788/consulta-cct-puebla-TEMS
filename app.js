@@ -9,7 +9,7 @@ document.getElementById('cctInput').addEventListener('keypress', function (e) {
 async function consultarCCT() {
   const inputRaw = document.getElementById('cctInput').value;
   const resultDiv = document.getElementById('result');
-  const animacionDiv = document.querySelector('.animacion-container'); // Identifica la animación
+  const animacionDiv = document.querySelector('.animacion-container');
   
   resultDiv.innerHTML = '';
 
@@ -20,7 +20,7 @@ async function consultarCCT() {
     return;
   }
 
-  // Oculta la animación al presionar Consultar
+  // Oculta la animación al realizar la consulta
   if (animacionDiv) {
     animacionDiv.style.display = 'none';
   }
@@ -47,12 +47,15 @@ async function consultarCCT() {
       const cct = resultado.CCT || cctBuscada;
       const nombreEscuela = resultado.Nombre_Escuela || 'No especificado';
       const municipio = resultado.Municipio || 'No especificado';
-      const fecha = resultado.Fecha_Asamblea || 'Por confirmar';
-      const hora = resultado.Hora_Asamblea || 'Por confirmar';
+      
+      // Adaptado para leer los campos correctos del JSON (puedes ajustar si en tu JSON se llaman diferente)
+      const fecha = resultado.Fecha_Asamblea || resultado.Fecha || 'Por confirmar';
+      const hora = resultado.Hora_Asamblea || resultado.Hora || 'Por confirmar';
+      
       const sede = resultado.Sede ? resultado.Sede.trim() : 'No especificada';
       const direccion = resultado.Dirección || resultado.Direccion || 'No especificada';
 
-     resultDiv.innerHTML = `
+      resultDiv.innerHTML = `
         <div style="border: 2px solid #103923; padding: 20px; border-radius: 8px; background-color: #f0fdf4; margin-top: 15px;">
           <h3 style="color: #AD841F; margin-top: 0; font-weight: 700;">${nombreEscuela}</h3>
           <p><strong>CCT:</strong> ${cct}</p>
