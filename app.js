@@ -49,8 +49,8 @@ async function consultarCCT() {
       const municipio = resultado.Municipio || 'No especificado';
       
       // Adaptado para leer los campos correctos del JSON (puedes ajustar si en tu JSON se llaman diferente)
-      const fecha = resultado.Fecha_Asamblea || resultado.Fecha || 'Por confirmar';
-      const hora = resultado.Hora_Asamblea || resultado.Hora || 'Por confirmar';
+      const fecha = resultado.Fecha || resultado.Fecha || 'Por confirmar';
+      const hora = resultado.Hora || resultado.Hora || 'Por confirmar';
       
       const sede = resultado.Sede ? resultado.Sede.trim() : 'No especificada';
       const direccion = resultado.Dirección || resultado.Direccion || 'No especificada';
