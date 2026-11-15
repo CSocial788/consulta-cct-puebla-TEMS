@@ -6,6 +6,25 @@ document.getElementById('cctInput').addEventListener('keypress', function (e) {
   }
 });
 
+// Función para transformar la fecha a formato largo en español
+function formatearFecha(fechaStr) {
+  if (!fechaStr || fechaStr === 'Por confirmar') return 'Por confirmar';
+  
+  // Intenta limpiar y leer la fecha
+  let fechaObj = new Date(fechaStr);
+  
+  // Si viene en formato numérico tipo MM/DD/YY o YYYY-MM-DD
+  if (isNaN(fechaObj.getTime())) {
+    return fechaStr; // Si no la reconoce, la deja como viene original
+  }
+
+  const opciones = { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' };
+  let fechaFormateada = fechaObj.toLocaleDateString('es-ES', opciones);
+  
+  // Capitaliza la primera letra del mes y ajusta el formato "17 de noviembre de 2026" a "17 de Noviembre de 2026"
+  return fechaFormateada.replace(/\b[a-z]/g, letra => letra.toUpperCase());
+}
+
 async function consultarCCT() {
   const inputRaw = document.getElementById('cctInput').value;
   const resultDiv = document.getElementById('result');
@@ -48,10 +67,11 @@ async function consultarCCT() {
       const nombreEscuela = resultado.Nombre_Escuela || 'No especificado';
       const municipio = resultado.Municipio || 'No especificado';
       
-      // Adaptado para leer los campos correctos del JSON (puedes ajustar si en tu JSON se llaman diferente)
-      const fecha = resultado.Fecha || resultado.Fecha || 'Por confirmar';
-      const hora = resultado.Hora || resultado.Hora || 'Por confirmar';
+      // Aplica el formato de fecha limpio
+      const fechaBruta = resultado.Fecha || resultado.Fecha_Asamblea || 'Por confirmar';
+      const fecha = formatearFecha(fechaBruta);
       
+      const hora = resultado.Hora || resultado.Hora_Asamblea || 'Por confirmar';
       const sede = resultado.Sede ? resultado.Sede.trim() : 'No especificada';
       const direccion = resultado.Dirección || resultado.Direccion || 'No especificada';
 
