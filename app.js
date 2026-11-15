@@ -6,23 +6,23 @@ document.getElementById('cctInput').addEventListener('keypress', function (e) {
   }
 });
 
-// Función para transformar la fecha a formato largo en español
+// Función para transformar la fecha y poner el "de" en minúsculas
 function formatearFecha(fechaStr) {
   if (!fechaStr || fechaStr === 'Por confirmar') return 'Por confirmar';
   
-  // Intenta limpiar y leer la fecha
   let fechaObj = new Date(fechaStr);
   
-  // Si viene en formato numérico tipo MM/DD/YY o YYYY-MM-DD
   if (isNaN(fechaObj.getTime())) {
-    return fechaStr; // Si no la reconoce, la deja como viene original
+    return fechaStr; 
   }
 
   const opciones = { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' };
   let fechaFormateada = fechaObj.toLocaleDateString('es-ES', opciones);
   
-  // Capitaliza la primera letra del mes y ajusta el formato "17 de noviembre de 2026" a "17 de Noviembre de 2026"
-  return fechaFormateada.replace(/\b[a-z]/g, letra => letra.toUpperCase());
+  // Capitaliza el mes y reemplaza cualquier " De " por " de " en minúsculas
+  return fechaFormateada
+    .replace(/\b[a-z]/g, letra => letra.toUpperCase())
+    .replace(/\bDe\b/g, 'de');
 }
 
 async function consultarCCT() {
@@ -67,7 +67,6 @@ async function consultarCCT() {
       const nombreEscuela = resultado.Nombre_Escuela || 'No especificado';
       const municipio = resultado.Municipio || 'No especificado';
       
-      // Aplica el formato de fecha limpio
       const fechaBruta = resultado.Fecha || resultado.Fecha_Asamblea || 'Por confirmar';
       const fecha = formatearFecha(fechaBruta);
       
@@ -77,7 +76,8 @@ async function consultarCCT() {
 
       resultDiv.innerHTML = `
         <div style="border: 2px solid #103923; padding: 20px; border-radius: 8px; background-color: #f0fdf4; margin-top: 15px;">
-          <h3 style="color: #AD841F; margin-top: 0; font-weight: 700;">${nombreEscuela}</h3>
+          <!-- Título de la escuela en color VINO (#691c32) -->
+          <h3 style="color: #691c32; margin-top: 0; font-weight: 700;">${nombreEscuela}</h3>
           <p><strong>CCT:</strong> ${cct}</p>
           <p><strong>Municipio:</strong> ${municipio}</p>
           <p><strong>Fecha:</strong> ${fecha}</p>
