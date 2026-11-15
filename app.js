@@ -24,28 +24,43 @@ function formatearFecha(fechaStr) {
     .replace(/\bDe\b/g, 'de');
 }
 
-// Función para limpiar la hora (quita segundos y ajusta a a.m./p.m.)
+// Función para limpiar la hora y asegurar formato 09:00 a.m. / p.m.
 function formatearHora(horaStr) {
   if (!horaStr || horaStr === 'Por confirmar') return 'Por confirmar';
   
   let horaLimpia = horaStr.trim();
 
-  // Intenta detectar formato 24 horas (ej. "14:30" o "14:30:00")
-  let partes24 = horaLimpia.match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/);
-  if (partes24) {
-    let h = parseInt(partes24[1], 10);
-    let m = partes24[2];
-    let sufijo = h >= 12 ? 'p.m.' : 'a.m.';
-    h = h % 12 || 12;
-    return `${h}:${m} ${sufijo}`;
+  // Detecta formato 24 horas o 12 horas con o sin segundos
+  let partes = horaLimpia.match(/^(\d{1,2}):(\d{2})(?::\d{2})?\s*(AM|PM|a\.m\.|p\.m\.)?/i);
+  
+  if (partes) {
+    let h = parseInt(partes[1], 10);
+    let m = partes[2];
+    let ampmOriginal = partes[3] ? partes[3].toLowerCase() : '';
+    
+    let sufijo = '';
+    if (ampmOriginal.includes('p') || (!ampmOriginal && h >= 12)) {
+      sufijo = 'p.m.';
+    } else {
+      sufijo = 'a.m.';
+    }
+
+    // Si viene en formato 24h, convertimos a 12h
+    if (!ampmOriginal && (h > 12 || h === 0)) {
+      h = h % 12 || 12;
+    } else if (!ampmOriginal && h === 0) {
+      h = 12;
+    } else if (ampmOriginal && h > 12) {
+      h = h % 12 || 12;
+    }
+
+    // Asegura que la hora tenga 2 dígitos (ej. 09 en vez de 9)
+    let horaConCero = String(h).padStart(2, '0');
+
+    return `${horaConCero}:${m} ${sufijo}`;
   }
 
-  // Si ya viene en formato 12 horas (ej. "9:00:00 AM" o "9:00 AM")
-  return horaLimpia
-    .replace(/:00\s*/, ' ') // Quita los segundos si vienen como :00
-    .replace(/AM/gi, 'a.m.')
-    .replace(/PM/gi, 'p.m.')
-    .replace(/\s+/g, ' ');
+  return horaLimpia;
 }
 
 async function consultarCCT() {
