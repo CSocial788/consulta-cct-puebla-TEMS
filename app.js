@@ -19,10 +19,33 @@ function formatearFecha(fechaStr) {
   const opciones = { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' };
   let fechaFormateada = fechaObj.toLocaleDateString('es-ES', opciones);
   
-  // Capitaliza el mes y reemplaza cualquier " De " por " de " en minúsculas
   return fechaFormateada
     .replace(/\b[a-z]/g, letra => letra.toUpperCase())
     .replace(/\bDe\b/g, 'de');
+}
+
+// Función para limpiar la hora (quita segundos y ajusta a a.m./p.m.)
+function formatearHora(horaStr) {
+  if (!horaStr || horaStr === 'Por confirmar') return 'Por confirmar';
+  
+  let horaLimpia = horaStr.trim();
+
+  // Intenta detectar formato 24 horas (ej. "14:30" o "14:30:00")
+  let partes24 = horaLimpia.match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/);
+  if (partes24) {
+    let h = parseInt(partes24[1], 10);
+    let m = partes24[2];
+    let sufijo = h >= 12 ? 'p.m.' : 'a.m.';
+    h = h % 12 || 12;
+    return `${h}:${m} ${sufijo}`;
+  }
+
+  // Si ya viene en formato 12 horas (ej. "9:00:00 AM" o "9:00 AM")
+  return horaLimpia
+    .replace(/:00\s*/, ' ') // Quita los segundos si vienen como :00
+    .replace(/AM/gi, 'a.m.')
+    .replace(/PM/gi, 'p.m.')
+    .replace(/\s+/g, ' ');
 }
 
 async function consultarCCT() {
@@ -70,13 +93,14 @@ async function consultarCCT() {
       const fechaBruta = resultado.Fecha || resultado.Fecha_Asamblea || 'Por confirmar';
       const fecha = formatearFecha(fechaBruta);
       
-      const hora = resultado.Hora || resultado.Hora_Asamblea || 'Por confirmar';
+      const horaBruta = resultado.Hora || resultado.Hora_Asamblea || 'Por confirmar';
+      const hora = formatearHora(horaBruta);
+      
       const sede = resultado.Sede ? resultado.Sede.trim() : 'No especificada';
       const direccion = resultado.Dirección || resultado.Direccion || 'No especificada';
 
       resultDiv.innerHTML = `
         <div style="border: 2px solid #103923; padding: 20px; border-radius: 8px; background-color: #f0fdf4; margin-top: 15px;">
-          <!-- Título de la escuela en color VINO (#691c32) -->
           <h3 style="color: #691c32; margin-top: 0; font-weight: 700;">${nombreEscuela}</h3>
           <p><strong>CCT:</strong> ${cct}</p>
           <p><strong>Municipio:</strong> ${municipio}</p>
