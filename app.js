@@ -52,12 +52,12 @@ async function consultarCCT() {
       const sede = resultado.Sede ? resultado.Sede.trim() : 'No especificada';
       const direccion = resultado.Dirección || resultado.Direccion || 'No especificada';
 
-      resultDiv.innerHTML = `
+     resultDiv.innerHTML = `
         <div style="border: 2px solid #103923; padding: 20px; border-radius: 8px; background-color: #f0fdf4; margin-top: 15px;">
-          <h3 style="color: #691c32; margin-top: 0; font-weight: 700;">${nombreEscuela}</h3>
+          <h3 style="color: #AD841F; margin-top: 0; font-weight: 700;">${nombreEscuela}</h3>
           <p><strong>CCT:</strong> ${cct}</p>
           <p><strong>Municipio:</strong> ${municipio}</p>
-          <p><strong>Fecha de Asamblea:</strong> ${fecha}</p>
+          <p><strong>Fecha:</strong> ${fecha}</p>
           <p><strong>Hora:</strong> ${hora}</p>
           <p><strong>Sede:</strong> ${sede}</p>
           <p><strong>Dirección:</strong> ${direccion}</p>
